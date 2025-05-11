@@ -1,26 +1,59 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
-
-//create your first component
 const Home = () => {
+	const [seconds, setSeconds] = useState(0);
+	const [intervalId, setIntervalId] = useState(null);
+
+	useEffect(() => {
+		const id = setInterval(() => {
+			setSeconds(prevSeconds => {
+				const newSeconds = prevSeconds + 1;
+				if (newSeconds === 10) {
+					alert("¡El contador ha llegado a 10 segundos!");
+					clearInterval(id);
+					setIntervalId(null);
+				}
+				return newSeconds;
+			});
+		}, 1000);
+		setIntervalId(id);
+		return () => {
+			if (id) {
+				clearInterval(id);
+			}
+		};
+	}, []);
+
+	const stopInterval = () => {
+		if (intervalId) {
+			clearInterval(intervalId);
+			setIntervalId(null);
+		}
+	};
+
+	const startInterval = () => {
+		if (intervalId) return;
+		const id = setInterval(() => {
+			setSeconds(prevSeconds => prevSeconds + 1);
+		}, 1000);
+		setIntervalId(id);
+	};
+
+	const resetInterval = () => {
+		setSeconds(0);
+		if (intervalId) {
+			clearInterval(intervalId);
+			setIntervalId(null);
+		}
+	};
+
 	return (
 		<div className="text-center">
-            
-
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
+			<h2>Contador: {seconds}</h2>
+			<p>Valor actual: {seconds}</p>
+			<button onClick={startInterval}>Start</button>
+			<button onClick={stopInterval}>Stop</button>
+			<button onClick={resetInterval}>Reset</button>
 		</div>
 	);
 };
